@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="css/graphical.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="js/html-to-image.js"></script>
+  <script src="js/index.js"></script>
+  <title>Bastionlands Hex Creator</title>
+  <meta name="Description" content="Create land hexes for Mythic Bastionlands.">
+  <meta http-equiv="content-language" content="en-US">
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bastionlands Site Creator" />
+  <meta name="twitter:description" content="Create land hexes for Mythic Bastionlands." />
+  <meta property="og:url" content="https://crowsnest.me/bastion-site/hexgen" />
+  <meta property="og:image" content="https://crowsnest.me/bastion/img/hexgen/preview.webp" />
+  <meta property="twitter:image" content="https://crowsnest.me/bastion/hexgen/img/preview.webp" />
+</head>
+
+<body>
+  <div id="ui-overlay">
+    <div id="ui-notifications"></div>
+  </div>
+  <div class="content">
+    <div class="instructions">
+      <select id="character-select">
+        <option value="barren" selected>Barren</option>
+        <option value="dry">Dry</option>
+        <option value="grey">Grey</option>
+        <option value="sparse">Sparse</option>
+        <option value="sharp">Sharp</option>
+        <option value="teeming">Teeming</option>
+        <option value="still">Still</option>
+        <option value="soft">Soft</option>
+        <option value="overgrown">Overgrown</option>
+        <option value="vivid">Vivid</option>
+        <option value="sodden">Sodden</option>
+        <option value="lush">Lush</option>
+      </select>
+      <br />
+      <select id="landscape-select">
+        <option value="marsh" selected>Marsh</option>
+        <option value="heath">Heath</option>
+        <option value="crags">Crags</option>
+        <option value="peaks">Peaks</option>
+        <option value="forest">Forest</option>
+        <option value="valley">Valley</option>
+        <option value="hills">Hills</option>
+        <option value="meadow">Meadow</option>
+        <option value="bog">Bog</option>
+        <option value="lakes">Lakes</option>
+        <option value="glades">Glades</option>
+        <option value="plain">Plain</option>
+      </select>
+    </div>
+    <a class="save-hex">save</a>
+    <div class="map-frame" id="map-frame">
+      <div class="landscape-signifier"></div>
+      <div class="map-canvas" id="map-canvas">
+      </div>
+    </div>
+  </div>
+</body>

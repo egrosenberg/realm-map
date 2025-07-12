@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="css/graphical.css" />
+  <script src="https://kit.fontawesome.com/e546e56560.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="js/lib/jquery-ui.min.js"></script>
+  <script src="js/lib/html-to-image.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/index.js"></script>
+  <title>Realm Map</title>
+  <meta name="Description" content="Generate realm maps for Mythic Bastionlands.">
+  <meta http-equiv="content-language" content="en-US">
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bastionland Realm Map Generator" />
+  <meta name="twitter:description" content="Generate realm maps for Mythic Bastionland" />
+  <meta property="og:url" content="https://crowsnest.me/bastion-site/map" />
+  <meta property="og:image" content="https://crowsnest.me/bastion-site/map/img/preview.webp" />
+  <meta property="twitter:image" content="https://crowsnest.me/bastion-site/map/img/preview.webp" />
+</head>
+
+<body>
+  <div id="ui-overlay">
+    <div id="ui-notifications"></div>
+  </div>
+  <div class="content">
+    <div class="instructions">
+    </div>
+    <div class="lower-bar">
+
+      <div class="controls">
+        <div class="controls-row">
+          <div>
+            <label for="player-mode-toggle">
+              Player View
+            </label><input type="checkbox" id="player-mode-toggle">
+          </div>
+          <div class="size-indicator">Tile size: 256px</div>
+        </div>
+        <div class="controls-row">
+          <a class="regen-map">Regenerate Map</a>
+          <a class="save-hex">Save Image</a>
+          <a class="export-map">Export Map</a>
+          <a class="export-map-player">Export Map (player ver.)</a>
+          <a class="upload-map">Upload Map</a>
+          <!-- <a class="export-map-uri">Export Map URI</a>
+          <a class="export-player-uri">Export Player Map URI</a> -->
+        </div>
+      </div>
+    </div>
+    <div class="save-controls">
+      <div class="save-slot" data-index="0">
+        <button title="Save Map" class="save-map">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+        <button title="Load Map" class="load-map">
+          <i class="fa-solid fa-file-arrow-down"></i>
+        </button>
+        <div title="Local Map 0" class="slot-label">
+          0
+        </div>
+      </div>
+      <div class="save-slot" data-index="1">
+        <button title="Save Map" class="save-map">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+        <button title="Load Map" class="load-map">
+          <i class="fa-solid fa-file-arrow-down"></i>
+        </button>
+        <div title="Local Map 1" class="slot-label">
+          1
+        </div>
+      </div>
+      <div class="save-slot" data-index="2">
+        <button title="Save Map" class="save-map">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+        <button title="Load Map" class="load-map">
+          <i class="fa-solid fa-file-arrow-down"></i>
+        </button>
+        <div title="Local Map 2" class="slot-label">
+          2
+        </div>
+      </div>
+      <div class="save-slot" data-index="3">
+        <button title="Save Map" class="save-map">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+        <button title="Load Map" class="load-map">
+          <i class="fa-solid fa-file-arrow-down"></i>
+        </button>
+        <div title="Local Map 3" class="slot-label">
+          3
+        </div>
+      </div>
+      <div class="save-slot" data-index="4">
+        <button title="Save Map" class="save-map">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+        <button title="Load Map" class="load-map">
+          <i class="fa-solid fa-file-arrow-down"></i>
+        </button>
+        <div title="Local Map 4" class="slot-label">
+          4
+        </div>
+      </div>
+    </div>
+    <div class="map-frame" id="map-frame">
+      <div class="landscape-signifier"></div>
+      <div class="map-canvas" id="map-canvas">
+      </div>
+    </div>
+    <div class="side-bar">
+      <div>
+        <h1>Myths</h1>
+        <div class="myths">
+          <ol class="myths-list">
+            <li>
+              <input type="text" placeholder="Myth 1" class="myth-input">
+              <span class="position"></span>
+            </li>
+            <li>
+              <input type="text" placeholder="Myth 2" class="myth-input">
+              <span class="position"></span>
+            </li>
+            <li>
+              <input type="text" placeholder="Myth 3" class="myth-input">
+              <span class="position"></span>
+            </li>
+            <li>
+              <input type="text" placeholder="Myth 4" class="myth-input">
+              <span class="position"></span>
+            </li>
+            <li>
+              <input type="text" placeholder="Myth 5" class="myth-input">
+              <span class="position"></span>
+            </li>
+            <li>
+              <input type="text" placeholder="Myth 6" class="myth-input">
+              <span class="position"></span>
+            </li>
+          </ol>
+        </div>
+      </div>
+      <div>
+        <h3 class="amber">Instructions</h3>
+        <ul>
+          <li>Display controls can be found at the bottom of the page</li>
+          <li>Scroll on the map to zoom</li>
+          <li>Hover over a tile to learn more about it</li>
+          <li>Double click a tile to edit it</li>
+          <li>You can toggle player view (at the bottom of the screen) to view an unmarked version of the map.</li>
+          <li>The map is exported at whatever tile resolution it is currently displayed at on page, if you want a higher
+            resolution map, don't forget to zoom in before pressing "save image"</li>
+          <li>
+            You can store up to 5 maps locally by using the controls in the top right corner.
+          </li>
+        </ul>
+      </div>
+      <div class="subtext">
+        <h3 class="amber">Disclaimer</h3>
+        This tool is a fan project and is in no way endorsed by or otherwise affiliated with Mythic Bastionland or
+        Bastionland Press.<br />
+        This tool is made entirely based on free materials including
+        the Quickstart and Realm Sheet PDF available on the
+        <a href="https://chrismcdee.itch.io/mythic-bastionland">
+          Mythic Bastionland itch.io page</a>.
+      </div>
+    </div>
+  </div>
+</body>

@@ -1,0 +1,378 @@
+@import url("https://fonts.googleapis.com/css2?family=Xanh+Mono:ital@0;1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap");
+
+body {
+  --color-barren: #e5c999;
+  --color-dry: #fceb97;
+  --color-grey: #cececc;
+  --color-sparse: #d1db8e;
+  --color-sharp: #ce9c9c;
+  --color-teeming: #b3f28c;
+  --color-still: #8cf2e9;
+  --color-soft: #8cd2f2;
+  --color-overgrown: #2a8f3f;
+  --color-vivid: #5ac954;
+  --color-sodden: #0d9674;
+  --color-lush: #1bba55;
+
+  --hex-inner-background: linear-gradient(
+      var(--color-dark-2),
+      var(--color-dark-1)
+    ),
+    radial-gradient(black 0%, transparent 75%);
+
+  --tile-size: 256px;
+  --row-margin: calc(var(--tile-size) * (00.8660254 - 1));
+  --tile-width: var(--tile-size);
+  --tile-height: calc(var(--tile-size) * 0.8660254);
+  --tile-margin: calc(var(--tile-size) * -0.25);
+  --even-offset: calc(var(--tile-size) * 0.5 * 0.8660254);
+
+  --blocker-1: polygon(
+    25% 6.69873%,
+    75% 6.69873%,
+    75% 11.69873%,
+    25% 11.69873%
+  );
+  --blocker-2: polygon(70% 6.69873%, 75% 6.69873%, 100% 50%, 95% 50%);
+  --blocker-3: polygon(70% 93.3013%, 75% 93.3013%, 100% 50%, 95% 50%);
+  --blocker-4: polygon(25% 88.3013%, 75% 88.3013%, 75% 93.3013%, 25% 93.3013%);
+  --blocker-5: polygon(30% 93.3013%, 25% 93.3013%, 0% 50%, 5% 50%);
+  --blocker-6: polygon(30% 6.69873%, 25% 6.69873%, 0% 50%, 5% 50%);
+
+  --color-page: #fff3cc;
+  --color-overlay: #d83434;
+}
+
+.content .map-frame {
+  padding-bottom: var(--tile-margin);
+  overflow: hidden;
+  /* scrollbar-width: thin;
+  scrollbar-color: var(--color-aqua-1) transparent; */
+  height: 100%;
+  width: 70%;
+  text-align: center;
+  user-select: none;
+  border-radius: 25px;
+  background-color: #1f1914;
+  background: linear-gradient(-45deg, #14100d 0%, #16120d 100%);
+  box-shadow: inset 0 0 30px #0005;
+}
+
+.landscape-signifier {
+  z-index: 200;
+  position: absolute;
+  bottom: 10%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--font-size-48);
+  font-family: "Xanh Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.lower-bar {
+  position: absolute;
+  text-align: center;
+  left: 0;
+  right: 0;
+  bottom: 1vh;
+  z-index: 100;
+  text-align: center;
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+}
+.controls-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.controls a {
+  cursor: pointer;
+}
+.controls label {
+  user-select: none;
+}
+
+.instructions {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  text-align: left;
+  z-index: 150;
+  font-size: var(--font-size-18);
+}
+
+.content .map {
+  width: max-content;
+  height: max-content;
+  padding: 0;
+  padding-top: calc(-1 * var(--row-margin));
+  padding-right: calc(-1 * var(--tile-margin));
+  padding-bottom: calc(-1 * (var(--row-margin) - var(--even-offset)));
+}
+
+.content .map .map-row {
+  padding: 0;
+  background: none;
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  width: max-content;
+  margin-top: var(--row-margin);
+}
+.content .map .map-row:not(:last-child) {
+  margin-bottom: var(--row-margin);
+}
+
+.content .map .map-cell {
+  padding: 0;
+  border: none;
+  position: relative;
+  overflow: visible;
+  margin-right: var(--tile-margin);
+  width: var(--tile-size);
+  height: var(--tile-size);
+  cursor: pointer;
+}
+.content .map .map-cell:hover {
+  z-index: 10;
+  filter: drop-shadow(0 0 10px var(--color-overlay));
+}
+.content .map .map-cell:is(:hover, .focused) * {
+  --color-overlay: #0014f2;
+}
+.content .map .map-cell:is(:hover, .focused) .overlay.landmark {
+  filter: invert(15%) sepia(96%) saturate(4056%) hue-rotate(236deg)
+    brightness(81%) contrast(145%);
+}
+.content .map .map-cell.focused {
+  z-index: 10;
+  filter: drop-shadow(0 0 10px var(--color-overlay));
+}
+.content .map .map-cell:nth-child(even) {
+  position: relative;
+  margin-top: var(--even-offset);
+  margin-bottom: calc(-1 * var(--even-offset));
+}
+.content .map .map-cell::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  clip-path: polygon(
+    0% 50%,
+    25% 6.69873%,
+    75% 6.69873%,
+    100% 50%,
+    75% 93.3013%,
+    25% 93.3013%
+  );
+  background-color: var(--color-page);
+  filter: drop-shadow(0 0 1 black);
+}
+
+.content .map .map-cell .overlay {
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  border: none;
+}
+.content .map .map-cell .overlay.blocker {
+  z-index: 101;
+  background-color: var(--color-overlay);
+}
+
+.content .map .map-cell .overlay.landmark {
+  z-index: 102;
+  filter: invert(32%) sepia(72%) saturate(6709%) hue-rotate(348deg)
+    brightness(92%) contrast(81%);
+}
+.content .map .map-cell .overlay.landmark-bg {
+  z-index: 101;
+}
+.content .map .map-cell .overlay.landmark-behind {
+  content: "";
+  position: absolute;
+  z-index: 15;
+  top: 25%;
+  left: 25%;
+  width: 50%;
+  height: 50%;
+  pointer-events: none;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-page);
+  display: none;
+}
+.content .map .map-cell .overlay.myth-num {
+  width: 20%;
+  height: 20%;
+  left: 20%;
+  top: 6%;
+  border: 2px solid var(--color-overlay);
+  border-radius: 50%;
+  color: var(--color-overlay);
+  font-size: calc(var(--tile-size) * 0.2);
+  background-color: var(--color-page);
+  font-family: serif;
+  font-weight: bold;
+  font-style: normal;
+  z-index: 101;
+}
+
+.content .map .map-tile {
+  position: relative;
+  width: var(--tile-size);
+  height: var(--tile-size);
+  object-fit: contain;
+  max-width: 100%;
+  border: none;
+  display: block;
+  padding: 0;
+  z-index: 10;
+  filter: invert(8%) sepia(0%) saturate(1717%) hue-rotate(157deg)
+    brightness(89%) contrast(87%);
+}
+
+.tooltip {
+  font-family: "Xanh Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+  position: absolute;
+  font-size: var(--font-size-24);
+  background-color: black;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.ui-helper-hidden-accessible {
+  position: absolute;
+  left: -999em;
+}
+
+.tile-edit .dialog-header {
+  font-size: var(--font-size-24);
+}
+.tile-edit .dialog-content {
+  font-size: var(--font-size-18);
+  font-family: "Xanh Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+.tile-edit .dialog-content .flexrow {
+  gap: 50px;
+}
+.tile-edit .dialog-content label {
+  user-select: none;
+  cursor: pointer;
+}
+
+.side-bar {
+  height: 100%;
+  position: relative;
+}
+
+.side-bar .myths {
+  font-size: var(--font-size-24);
+}
+
+.myths-list {
+  padding-left: 40px;
+  font-family: "Xanh Mono", monospace;
+  margin-top: 0;
+}
+.myths-list li {
+  cursor: default;
+}
+
+.myth-input {
+  border: none;
+  font-family: "Xanh Mono", monospace;
+  font-size: var(--font-size-18);
+  border-radius: 5px;
+  background: none;
+  color: lightgray;
+  cursor: default;
+  padding-left: 10px;
+}
+.myth-input:focus {
+  border: none;
+  outline: none;
+}
+.myth-input:is(:focus, :hover) {
+  box-shadow: 0 0 10px black;
+  background-color: var(--color-dark-2);
+  color: white;
+}
+
+.myths-list li .position {
+  font-size: var(--font-size-16);
+}
+
+.subtext {
+  font-size: var(--font-size-14);
+}
+
+.save-controls {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.save-controls .save-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border: thin solid var(--color-dark-4);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.save-controls button {
+  background: none;
+  cursor: pointer;
+  color: lightgray;
+  font-size: var(--font-size-18);
+  border-radius: 10px;
+  padding: 5px;
+  border: thin solid lightgray;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-controls button:hover {
+  color: white;
+  box-shadow: var(--color-amber-1) 0 0 10px;
+}
+
+.save-controls .slot-label {
+  font-size: var(--font-size-24);
+  font-family: "Xanh Mono", monospace;
+  text-align: center;
+  cursor: default;
+  user-select: none;
+}

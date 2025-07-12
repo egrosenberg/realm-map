@@ -1,0 +1,188 @@
+@import url("https://fonts.googleapis.com/css2?family=Xanh+Mono:ital@0;1&display=swap");
+
+body {
+  --line-color: var(--color-dark-2);
+  --line-color-active: var(--color-light-1);
+  --line-color-blocked: linear-gradient(
+    90deg,
+    var(--line-color-active),
+    var(--line-color-active) 48%,
+    #800000 48%,
+    #800000 52%,
+    var(--line-color-active) 52%,
+    var(--line-color-active)
+  );
+  --line-color-hidden: repeating-linear-gradient(
+    90deg,
+    var(--line-color-active),
+    var(--line-color-active) 20px,
+    transparent 20px,
+    transparent 40px
+  );
+  --line-color-hover: var(--color-dark-4);
+  --line-thickness: 6px;
+  --shape-inactive-color: var(--color-dark-2);
+  --shape-active-color: lightgray;
+  --circ-color: var(--color-dark-5);
+  --diamond-color: lightgray;
+
+  --color-barren: #e5c999;
+  --color-dry: #fceb97;
+  --color-grey: #cececc;
+  --color-sparse: #d1db8e;
+  --color-sharp: #ce9c9c;
+  --color-teeming: #b3f28c;
+  --color-still: #8cf2e9;
+  --color-soft: #8cd2f2;
+  --color-overgrown: #2a8f3f;
+  --color-vivid: #5ac954;
+  --color-sodden: #0d9674;
+  --color-lush: #1bba55;
+
+  --hex-inner-background: linear-gradient(
+      var(--color-dark-2),
+      var(--color-dark-1)
+    ),
+    radial-gradient(black 0%, transparent 75%);
+  --hex-ratio: 0.8660254;
+  --hex-small-side-pad: 6.69873%;
+}
+
+.content .map-frame {
+  position: relative;
+  width: 512px;
+  height: 512px;
+}
+
+.content .map-canvas {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.content .map-frame .line {
+  background-color: var(--line-color);
+  height: var(--line-thickness);
+  cursor: pointer;
+  border-radius: var(--line-thickness);
+}
+.content .map-frame .line:hover {
+  background-color: var(--line-color-hover);
+  border: 4px solid var(--line-color-hover);
+  border-left: none;
+  border-right: none;
+
+  z-index: 3;
+  margin-top: -4px;
+}
+.content .map-frame .line.active {
+  z-index: 5;
+}
+.content .map-frame .line.blocked {
+  z-index: 7;
+}
+.content .map-frame .line.transparent {
+  z-index: 9;
+}
+
+.content .map-frame .shape {
+  z-index: 100;
+  cursor: pointer;
+}
+.content .map-frame .shape:hover {
+  border: 6px solid var(--color-dark-4);
+  margin-left: -6px;
+  margin-top: -6px;
+}
+.content .map-frame .circ {
+  background-color: var(--circ-color);
+}
+.content .map-frame .shape.active {
+  z-index: 105;
+  background-color: var(--shape-active-color);
+  filter: drop-shadow(0px 0px 1px black);
+  /* border: 4px solid var(--color-dark-3);
+  margin-left: -4px;
+  margin-top: -4px; */
+}
+.content .map-frame .shape.entrance {
+  z-index: 50;
+  pointer-events: none;
+  border: 3px solid var(--color-mint-4);
+  margin-left: -3px;
+  margin-top: -3px;
+  background-color: var(--color-dark-1-50);
+}
+.content .map-frame .shape.secret.entrance {
+  border-style: dashed;
+}
+
+.hexagon {
+  position: absolute;
+  background: var(--color-dark-3);
+  clip-path: polygon(
+    0% 50%,
+    25% 6.69873%,
+    75% 6.69873%,
+    100% 50%,
+    75% 93.3013%,
+    25% 93.3013%
+  );
+}
+.hexagon.inner {
+  background-image: radial-gradient(black 0%, transparent 75%);
+}
+.hexagon.overlay {
+  z-index: 1000;
+  background: none;
+  background-image: linear-gradient(
+    150deg,
+    transparent 35%,
+    white 50%,
+    transparent 65%
+  );
+  background-blend-mode: lighten;
+  opacity: 0.2;
+}
+
+.landscape-signifier {
+  z-index: 200;
+  position: absolute;
+  bottom: 10%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--font-size-48);
+  font-family: "Xanh Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.save-hex {
+  position: fixed;
+  text-align: center;
+  left: 0;
+  right: 0;
+  bottom: 5vh;
+  cursor: pointer;
+}
+
+.instructions {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  text-align: left;
+  z-index: 150;
+  font-size: var(--font-size-18);
+}
+
+.hex-symbol {
+  z-index: 200;
+  position: absolute;
+  -webkit-mask-size: cover;
+  mask-size: 100%;
+  mask-mode: alpha;
+  mask-repeat: no-repeat;
+}

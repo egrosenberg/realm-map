@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="css/graphical.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="js/html-to-image.js"></script>
+  <script src="js/index.js"></script>
+  <title>Bastionlands Site Creator</title>
+  <meta name="Description" content="Create site maps for Mythic Bastionlands.">
+  <meta http-equiv="content-language" content="en-US">
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bastionlands Site Creator" />
+  <meta name="twitter:description" content="Create site maps for Mythic Bastionlands." />
+  <meta property="og:url" content="https://crowsnest.me/bastion-site" />
+  <meta property="og:image" content="https://crowsnest.me/bastion/img/preview.webp" />
+  <meta property="twitter:image" content="https://crowsnest.me/bastion/img/preview.webp" />
+
+</head>
+
+<body>
+  <div id="ui-overlay">
+    <div id="ui-notifications"></div>
+  </div>
+  <div class="content">
+    <div class="instructions">
+      Click paths and nodes to cycle through modes.<br />
+      Middle click a node to cycle through entrance types.
+    </div>
+    <a class="save-hex">save</a>
+    <div class="map-frame" id="map-frame">
+      <canvas class="map-canvas" id="map-canvas">
+      </canvas>
+    </div>
+  </div>
+</body>
