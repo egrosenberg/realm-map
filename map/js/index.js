@@ -139,11 +139,13 @@ function renderGrid(options = {}) {
         if (tile.from) {
           const diff = [tile.from[0] - i, tile.from[1] - j];
           fromDir = getConnectionNumber({ diff, evenOdd });
+          fromDir = connectionNumber({ p1: [i, j], p2: tile.from });
         }
         let toDir = 0;
         if (tile.to) {
           const diff = [tile.to[0] - i, tile.to[1] - j];
           toDir = getConnectionNumber({ diff, evenOdd });
+          toDir = connectionNumber({ p1: [i, j], p2: tile.to });
         }
         if (!fromDir && toDir) fromDir = ((toDir + 2) % 7) + 1;
         if (fromDir && !toDir) toDir = ((fromDir + 2) % 7) + 1;
@@ -285,6 +287,7 @@ const RIVER_CONNECTIONS = {
 
 /**
  * Finds the number for the connection direction of a river delta
+ * @deprecated use connectionNumber()
  * @param {{diff: [number,number], evenOdd: "even" | "odd"}} options
  * @returns
  */
@@ -294,6 +297,45 @@ function getConnectionNumber(options = {}) {
     if (delta[0] === diff[0] && delta[1] === diff[1]) return parseInt(num);
   }
   return 1;
+}
+
+/**
+ *
+ * @param {{
+ *  p1: [y: number, x: number],
+ *  p2: [y: number, x: number]
+ * }} options
+ * @returns number
+ */
+function connectionNumber(options) {
+  const {
+    p1: [y1, x1],
+    p2: [y2, x2],
+  } = options;
+  const evenOdd = x1 % 2 === 0 ? "even" : "odd";
+  const diff = [y2 - y1, x2 - x1];
+  for (const [num, delta] of Object.entries(RIVER_CONNECTIONS[evenOdd])) {
+    if (delta[0] === diff[0] && delta[1] === diff[1]) return parseInt(num);
+  }
+  return 1;
+}
+/**
+ *
+ * @param {{
+ *  pos: [y: number, x: number],
+ *  direction: number
+ * }} options
+ * @returns {[y: number, x: number]}
+ */
+function fromConnectionNumber(options) {
+  const {
+    pos: [y, x],
+    direction,
+  } = options;
+  const evenOdd = x % 2 === 0 ? "even" : "odd";
+  const delta = RIVER_CONNECTIONS[evenOdd][direction];
+  if (!delta) return [y, x];
+  return [y + delta[0], x + delta[1]];
 }
 
 /**
@@ -908,10 +950,12 @@ function decodeTiles(tiles) {
  *  character: number,
  *  landscape:number,
  *  to?: [number,number],
- *  from?: [number,number]
+ *  from?: [number,number],
  * }} tile
+ * @param {Event} ev
+ * @param {[y: number. x: number]} position
  */
-async function editTile(tile, ev) {
+async function editTile(tile, ev, position) {
   $(ev.currentTarget).addClass("focused");
   console.log(ev.currentTarget);
 
@@ -966,6 +1010,25 @@ async function editTile(tile, ev) {
         ${i == tile.blocked ? "checked" : ""}
       ><label for="blocked-${i}">${i}</label><br>`;
   }
+  const directions = ["", "N", "NE", "SE", "S", "SW", "NW"];
+  const fromDir = tile.from
+    ? connectionNumber({ p1: position, p2: tile.from })
+    : 1;
+  let fromRadio = "";
+  for (let i = 1; i <= 6; ++i) {
+    fromRadio += `
+      <input type="radio" id="from-${i}" name="from" value="${i}"
+        ${i === fromDir ? "checked" : ""}
+      ><label for="from-${i}">${i} (${directions[i]})</label><br>`;
+  }
+  const toDir = tile.to ? connectionNumber({ p1: position, p2: tile.to }) : 6;
+  let toRadio = "";
+  for (let i = 1; i <= 6; ++i) {
+    toRadio += `
+      <input type="radio" id="to-${i}" name="to" value="${i}"
+        ${i === toDir ? "checked" : ""}
+      ><label for="to-${i}">${i} (${directions[i]})</label><br>`;
+  }
   return new Promise((resolve) => {
     Confirm(
       "Edit Tile",
@@ -987,6 +1050,9 @@ async function editTile(tile, ev) {
           <h4>Landmark</h4>
           ${landmarkRadio}
         </div>
+      </div>
+      <br/>
+      <div class="flexrow">
         <div>
           <h4>Myth?</h4>
           ${mythRadio}
@@ -994,6 +1060,14 @@ async function editTile(tile, ev) {
         <div>
           <h4>Blocked?</h4>
           ${blockedRadio}
+        </div>
+        <div>
+          <h4>From</h4>
+          ${fromRadio}
+        </div>
+        <div>
+          <h4>To</h4>
+          ${toRadio}
         </div>
       </div>
       `,
@@ -1015,6 +1089,16 @@ async function editTile(tile, ev) {
           if (blocked === -1 || isNaN(blocked)) tile.blocked = undefined;
           else tile.blocked = blocked;
 
+          tile.from = fromConnectionNumber({
+            pos: position,
+            direction: parseInt(formValues.from),
+          });
+          tile.to = fromConnectionNumber({
+            pos: position,
+            direction: parseInt(formValues.to),
+          });
+
+          console.log(tile);
           $(ev.currentTarget).removeClass("focused");
           resolve();
         },
@@ -1279,7 +1363,10 @@ $(document).ready(() => {
     ev.preventDefault();
     const tile =
       tiles[$(ev.currentTarget).data("y")][$(ev.currentTarget).data("x")];
-    await editTile(tile, ev);
+    await editTile(tile, ev, [
+      $(ev.currentTarget).data("y"),
+      $(ev.currentTarget).data("x"),
+    ]);
     regenerate(tiles);
   });
 
