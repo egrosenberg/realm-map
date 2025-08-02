@@ -88,7 +88,7 @@ const REALM_FIELDS = {
   mythsN: { input: "myths-n-cfg" },
 };
 
-const MAX_MYTHS = 6;
+let realmCfg = structuredClone(DEFAULT_REALM_CFG);
 
 const NEIGHBOR_LAND_PERCENT = 0.8;
 const NEIGHBOR_CHAR_PERCENT = 0.9;
@@ -112,6 +112,16 @@ function download(text, name, type, element) {
   let file = new Blob([text], { type: type });
   element.href = URL.createObjectURL(file);
   element.download = name;
+}
+
+/**
+ * Updates realm config var with current input field values
+ */
+function updateCfg() {
+  for (const [key, value] of Object.entries(REALM_FIELDS)) {
+    const val = parseInt($(`#${value.input}`).val());
+    if (val && !isNaN(val)) realmCfg[key] = val;
+  }
 }
 
 /**
@@ -858,11 +868,7 @@ function regenerate(t) {
   if (t) {
     tiles = t;
   } else {
-    const realmCfg = structuredClone(DEFAULT_REALM_CFG);
-    for (const [key, value] of Object.entries(REALM_FIELDS)) {
-      const val = parseInt($(`#${value.input}`).val());
-      if (val && !isNaN(val)) realmCfg[key] = val;
-    }
+    updateCfg();
     tiles = generateRealm(realmCfg);
   }
   $("#map-frame").html(renderGrid({ tiles, playerView: playerMode }));
@@ -883,19 +889,32 @@ function regenerate(t) {
    * Show myth coordinates
    */
   const myths = findMyths(tiles);
-  $(".myths-list li").each((i, e) => {
-    const myth = myths[$(e).index() + 1];
-    if (myth) {
-      if (mythNames[$(e).index() + 1])
-        $(e)
-          .find(".myth-input")
-          .val(mythNames[$(e).index() + 1]);
+  let res = "";
+  for (let i = 1; i <= realmCfg.mythsN; ++i) {
+    const myth = myths[i];
+    if (!myth) continue;
+    const x = myth.x < 10 ? "&nbsp;" + myth.x : myth.x;
+    const y = myth.y < 10 ? "&nbsp;" + myth.y : myth.y;
+    res += `<li>
+              <input type="text" placeholder="Myth ${i}" class="myth-input"
+                value="${mythNames[i] ?? ""}">
+              <span class="position">${x}, ${y}</span>
+            </li>`;
+  }
+  $(".myths-list").html(res);
+  // $(".myths-list li").each((i, e) => {
+  //   const myth = myths[$(e).index() + 1];
+  //   if (myth) {
+  //     if (mythNames[$(e).index() + 1])
+  //       $(e)
+  //         .find(".myth-input")
+  //         .val(mythNames[$(e).index() + 1]);
 
-      const x = myth.x < 10 ? "&nbsp;" + myth.x : myth.x;
-      const y = myth.y < 10 ? "&nbsp;" + myth.y : myth.y;
-      $(e).find(".position").html(`${x}, ${y}`);
-    }
-  });
+  //     const x = myth.x < 10 ? "&nbsp;" + myth.x : myth.x;
+  //     const y = myth.y < 10 ? "&nbsp;" + myth.y : myth.y;
+  //     $(e).find(".position").html(`${x}, ${y}`);
+  //   }
+  // });
 }
 
 /**
@@ -1027,7 +1046,7 @@ async function editTile(tile, ev, position) {
   <input type="radio" id="myth-0" name="myth" value=""
         ${!tile.myth ? "checked" : ""}
       ><label for="myth-0">none</label><br>`;
-  for (let i = 1; i <= MAX_MYTHS; ++i) {
+  for (let i = 1; i <= realmCfg.mythsN; ++i) {
     mythRadio += `
       <input type="radio" id="myth-${i}" name="myth" value="${i}"
         ${i == tile.myth ? "checked" : ""}
@@ -1178,6 +1197,10 @@ function parseUpload(text) {
   tiles = decodeTiles(data.tiles);
   console.log(data.myths);
   mythNames = data.myths;
+  realmCfg = data.realmCfg;
+  for (const [key, value] of Object.entries(REALM_FIELDS)) {
+    $(`#${value.input}`).val(realmCfg[key]);
+  }
   regenerate(tiles);
 }
 
@@ -1210,7 +1233,8 @@ async function promptUpload() {
 function stashLocal(key = 0) {
   const data = {
     tiles: encodeTiles(tiles),
-    myths: {},
+    myths: structuredClone(mythNames),
+    realmCfg: structuredClone(realmCfg),
   };
   localStorage.setItem(`stashedMap[${key}]`, JSON.stringify(data));
 }
@@ -1289,12 +1313,14 @@ $(document).ready(() => {
     const data = {
       tiles: encodeTiles(tiles),
       myths: mythNames,
+      realmCfg: structuredClone(realmCfg),
     };
     download(JSON.stringify(data), "map.json", "text/json", ev.currentTarget);
   });
   $(document).on("click", ".export-map-player", async (ev) => {
     const data = {
       tiles: encodeTiles(tiles, true),
+      realmCfg: DEFAULT_REALM_CFG,
       myths: {},
     };
     download(
@@ -1436,4 +1462,9 @@ $(document).ready(() => {
   $(document).on("change", ".myth-input", () => {
     mythNames = findMythNames();
   });
+
+  /**
+   * listen to realm config updates
+   */
+  $(document).on("change", ".config input", updateCfg);
 });
