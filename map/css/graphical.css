@@ -288,6 +288,8 @@ body {
 .side-bar {
   height: 100%;
   position: relative;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .side-bar .myths {
@@ -346,6 +348,7 @@ body {
   gap: 5px;
   border: thin solid var(--color-dark-4);
   padding: 10px;
+  padding-bottom: 0px;
   border-radius: 10px;
 }
 

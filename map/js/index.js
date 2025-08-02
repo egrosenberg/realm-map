@@ -71,6 +71,21 @@ const DEFAULT_REALM_CFG = {
   height: 12,
   landscapeN: 12,
   characterN: 12,
+  landmarkMin: 3,
+  landmarkMax: 4,
+  holdingN: 4,
+  mythsN: 6,
+};
+
+const REALM_FIELDS = {
+  width: { input: "width-cfg" },
+  height: { input: "height-cfg" },
+  landscapeN: { input: "landscape-n-cfg" },
+  characterN: { input: "character-n-cfg" },
+  landmarkMin: { input: "landmark-min-cfg" },
+  landmarkMax: { input: "landmark-max-cfg" },
+  holdingN: { input: "holding-cfg" },
+  mythsN: { input: "myths-n-cfg" },
 };
 
 const MAX_MYTHS = 6;
@@ -641,13 +656,26 @@ function countLandscape(options = {}) {
  *  height?: number;
  *  landscapeN?: number;
  *  characterN?: number;
+ *  landmarkMin?: number,
+ *  landmarkMax?: number,
+ *  holdingN?: number,
+ *  mythsN?: number,
  * }} options
  */
 function generateRealm(options = {}) {
   for (const [key] of Object.entries(DEFAULT_REALM_CFG)) {
     options[key] ??= DEFAULT_REALM_CFG[key];
   }
-  const { width, height, landscapeN, characterN } = options;
+  const {
+    width,
+    height,
+    landscapeN,
+    characterN,
+    landmarkMin,
+    landmarkMax,
+    holdingN,
+    mythsN,
+  } = options;
 
   const landscapes = [];
   // decide landscape pool
@@ -707,7 +735,7 @@ function generateRealm(options = {}) {
 
   // place holdings
   const holdingPositions = [];
-  for (let i = 0; i < N_HOLDINGS; ++i) {
+  for (let i = 0; i < holdingN; ++i) {
     const validPos = (position) => {
       for (const pos of holdingPositions) {
         const dist =
@@ -730,11 +758,11 @@ function generateRealm(options = {}) {
     }
     holdingPositions.push(position);
   }
-  for (let i = 0; i < N_HOLDINGS; ++i) {
+  for (let i = 0; i < holdingN; ++i) {
     const pos = holdingPositions[i];
     tiles[pos[0]][pos[1]] = {
       character: randInt(0, LAND_CHARACTERS.length),
-      landscape: HOLDING_OFFSET + i,
+      landscape: HOLDING_OFFSET + (i % N_HOLDINGS),
     };
   }
 
@@ -742,7 +770,7 @@ function generateRealm(options = {}) {
    * Place landmarks
    */
   for (const [id] of Object.entries(LANDMARKS)) {
-    const count = randInt(3, 5);
+    const count = randInt(landmarkMin, landmarkMax + 1);
     for (let i = 0; i < count; i++) {
       // find a random unoccupied position
       let position = [
@@ -785,7 +813,7 @@ function generateRealm(options = {}) {
   /**
    * place myths
    */
-  for (let i = 1; i <= MAX_MYTHS; ++i) {
+  for (let i = 1; i <= mythsN; ++i) {
     // find a random unoccupied position
     let position = [
       randInt(1, tiles.length - 2),
@@ -810,7 +838,7 @@ function generateRealm(options = {}) {
       return true;
     };
     let tries = 0;
-    const maxTries = 10000;
+    const maxTries = 100000;
     while (!validPosition(position) && tries < maxTries) {
       position = [
         randInt(0, tiles.length - 1),
@@ -830,7 +858,12 @@ function regenerate(t) {
   if (t) {
     tiles = t;
   } else {
-    tiles = generateRealm();
+    const realmCfg = structuredClone(DEFAULT_REALM_CFG);
+    for (const [key, value] of Object.entries(REALM_FIELDS)) {
+      const val = parseInt($(`#${value.input}`).val());
+      if (val && !isNaN(val)) realmCfg[key] = val;
+    }
+    tiles = generateRealm(realmCfg);
   }
   $("#map-frame").html(renderGrid({ tiles, playerView: playerMode }));
   $(".map-tile").tooltip({

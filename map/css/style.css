@@ -271,6 +271,28 @@ body .scm-container .scm-item:has(.fa-trash-can):hover {
   background-color: var(--color-rose-1);
 }
 
+/* inputs */
+input {
+  background-color: var(--color-dark-1-90);
+  border: none;
+  outline: none;
+  color: lightgray;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: var(--font-size-16);
+  font-family: "Xanh Mono", monospace;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* frame */
 .s-frame {
   display: flex;
