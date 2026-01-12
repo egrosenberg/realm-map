@@ -292,8 +292,10 @@ body .scm-container .scm-item:has(.fa-trash-can):hover {
   right: calc(50vw - 1250px / 2 - 65px); */
   top: 3vh;
   bottom: 3vh;
-  left: calc(50vw - 50vh - 3vh);
-  right: calc(50vw - 50vh - 3vh);
+  /* left: calc(50vw - 50vh - 3vh);
+  right: calc(50vw - 50vh - 3vh); */
+  left: 3vh;
+  right: 3vh;
   display: flex;
   justify-content: center;
   align-items: center;
